@@ -1,0 +1,38 @@
+import { app } from 'electron'
+import { join } from 'path'
+import { readFileSync, writeFileSync, existsSync } from 'fs'
+
+export interface AppSettings {
+  downloadPath: string
+  maxConcurrentDownloads: number
+  defaultFormat: string
+  embedThumbnail: boolean
+  addMetadata: boolean
+  ytdlpCustomPath: string
+}
+
+export const defaultSettings: AppSettings = {
+  downloadPath: join(app.getPath('downloads'), 'VidDown'),
+  maxConcurrentDownloads: 3,
+  defaultFormat: 'bestvideo+bestaudio/best',
+  embedThumbnail: false,
+  addMetadata: true,
+  ytdlpCustomPath: ''
+}
+
+const settingsPath = join(app.getPath('userData'), 'settings.json')
+
+export function getSettings(): AppSettings {
+  try {
+    if (!existsSync(settingsPath)) return defaultSettings
+    const raw = readFileSync(settingsPath, 'utf-8')
+    return { ...defaultSettings, ...JSON.parse(raw) }
+  } catch {
+    return defaultSettings
+  }
+}
+
+export function saveSettings(settings: Partial<AppSettings>): void {
+  const current = getSettings()
+  writeFileSync(settingsPath, JSON.stringify({ ...current, ...settings }, null, 2))
+}
