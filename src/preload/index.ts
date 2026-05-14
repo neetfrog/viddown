@@ -81,11 +81,9 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
   } catch (error) {
-    console.error(error)
+    console.error('Failed to expose APIs via context bridge:', error)
   }
 } else {
-  // @ts-ignore
-  window.electron = electronAPI
-  // @ts-ignore
-  window.api = api
+  // Context isolation is required for production security
+  throw new Error('Context isolation is not enabled. This is a critical security issue.')
 }

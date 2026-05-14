@@ -169,7 +169,13 @@ export default function AddDownload() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') mode === 'gallery' ? handleGalleryDownload() : handleFetch()
+            if (e.key === 'Enter') {
+              if (mode === 'gallery') {
+                handleGalleryDownload()
+              } else {
+                handleFetch()
+              }
+            }
           }}
           placeholder={
             mode === 'gallery'

@@ -1,5 +1,5 @@
 import { DownloadItem } from '../types'
-import { X, CheckCircle2, AlertCircle, Clock, Loader2, FolderOpen, RefreshCw } from 'lucide-react'
+import { X, CheckCircle2, AlertCircle, Loader2, FolderOpen } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface DownloadCardProps {

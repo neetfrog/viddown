@@ -283,7 +283,7 @@ class DownloadManager extends EventEmitter {
     const wrapperPath = this.galleryDlWrapperPath
     const wrapperContent = process.platform === 'win32'
       ? `@echo off\r\nset PYTHONPATH=${targetDir}\r\n"${python}" -m gallery_dl %*\r\n`
-      : `#!/bin/sh\nPYTHONPATH=\"${targetDir}\" exec \"${python}\" -m gallery_dl \"$@\"\n`
+      : `#!/bin/sh\nPYTHONPATH="${targetDir}" exec "${python}" -m gallery_dl "$@"\n`
 
     writeFileSync(wrapperPath, wrapperContent, { encoding: 'utf-8' })
     if (process.platform !== 'win32') chmodSync(wrapperPath, 0o755)

@@ -17,9 +17,14 @@ function createWindow(): BrowserWindow {
     titleBarStyle: 'hidden',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
+      sandbox: true,
       contextIsolation: true,
-      nodeIntegration: false
+      nodeIntegration: false,
+      enableRemoteModule: false,
+      allowRunningInsecureContent: false,
+      worldSafeExecuteJavaScript: true,
+      v8Code: false,
+      devTools: false
     }
   })
 
@@ -56,7 +61,11 @@ app.whenReady().then(() => {
   // Window controls
   ipcMain.on('window-minimize', () => win.minimize())
   ipcMain.on('window-maximize', () => {
-    win.isMaximized() ? win.unmaximize() : win.maximize()
+    if (win.isMaximized()) {
+      win.unmaximize()
+    } else {
+      win.maximize()
+    }
   })
   ipcMain.on('window-close', () => win.close())
   ipcMain.handle('window-is-maximized', () => win.isMaximized())
@@ -83,6 +92,14 @@ app.whenReady().then(() => {
   // Video info
   ipcMain.handle('fetch-video-info', async (_e, url: string) => {
     try {
+      // Validate URL
+      if (!url || typeof url !== 'string') {
+        throw new Error('Invalid URL format')
+      }
+      const urlObj = new URL(url)
+      if (!['http:', 'https:'].includes(urlObj.protocol)) {
+        throw new Error('Only HTTP(S) URLs are supported')
+      }
       const info = await downloadManager.fetchVideoInfo(url)
       return { success: true, data: info }
     } catch (err: any) {
@@ -94,6 +111,19 @@ app.whenReady().then(() => {
   ipcMain.handle('start-download', async (_e, request) => {
     const settings = getSettings()
     try {
+      // Validate request object
+      if (!request || typeof request !== 'object') {
+        throw new Error('Invalid request format')
+      }
+      if (!request.id || typeof request.id !== 'string') {
+        throw new Error('Invalid download ID')
+      }
+      if (!request.url || typeof request.url !== 'string') {
+        throw new Error('Invalid URL')
+      }
+      // Validate URL
+      new URL(request.url)
+      
       await downloadManager.startDownload({
         ...request,
         outputDir: settings.downloadPath,
@@ -169,8 +199,22 @@ app.whenReady().then(() => {
   // Settings
   ipcMain.handle('get-settings', () => getSettings())
   ipcMain.handle('save-settings', (_e, settings) => {
-    saveSettings(settings)
-    return { success: true }
+    try {
+      if (!settings || typeof settings !== 'object') {
+        throw new Error('Invalid settings format')
+      }
+      // Validate critical settings
+      if (settings.maxConcurrentDownloads !== undefined) {
+        const num = Number(settings.maxConcurrentDownloads)
+        if (!Number.isInteger(num) || num < 1 || num > 10) {
+          throw new Error('maxConcurrentDownloads must be between 1 and 10')
+        }
+      }
+      saveSettings(settings)
+      return { success: true }
+    } catch (err: any) {
+      return { success: false, error: err.message }
+    }
   })
   ipcMain.handle('get-default-download-path', () => {
     return defaultSettings.downloadPath

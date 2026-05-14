@@ -19,7 +19,7 @@ export default function App() {
   const [activeView, setActiveView] = useState<NavView>('downloads')
   const [ytdlpReady, setYtdlpReady] = useState<boolean | null>(null)
   const [logs, setLogs] = useState<LogEntry[]>([])
-  const { addDownload, updateDownload } = useDownloadStore()
+  const { updateDownload } = useDownloadStore()
 
   // Check if yt-dlp is installed on startup
   useEffect(() => {

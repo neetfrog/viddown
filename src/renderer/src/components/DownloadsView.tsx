@@ -6,7 +6,6 @@ import { Download, Inbox } from 'lucide-react'
 
 export default function DownloadsView() {
   const downloads = useDownloadStore((s) => s.downloads)
-  const cancelDownload = useDownloadStore((s) => s.updateDownload)
   const removeDownload = useDownloadStore((s) => s.removeDownload)
 
   const activeDownloads = downloads.filter(
