@@ -54,6 +54,9 @@ export interface DownloadItem {
   addedAt: number
   completedAt?: number
   extractor?: string
+  audioOnly?: boolean
+  audioFormat?: string
+  useGalleryDl?: boolean
 }
 
 export interface AppSettings {
@@ -63,6 +66,8 @@ export interface AppSettings {
   embedThumbnail: boolean
   addMetadata: boolean
   ytdlpCustomPath: string
+  ffmpegCustomPath: string
+  galleryDlCustomPath: string
 }
 
 export type NavView = 'downloads' | 'history' | 'settings'
@@ -108,4 +113,13 @@ export const FORMAT_PRESETS: { label: string; value: string; description: string
     value: 'bestaudio[ext=mp3]/bestaudio/best',
     description: 'MP3 audio'
   }
+]
+
+export type DownloadMode = 'video' | 'audio' | 'gallery'
+
+export const AUDIO_FORMAT_PRESETS: { label: string; value: string; description: string }[] = [
+  { label: 'MP3', value: 'mp3', description: 'Most compatible (needs ffmpeg)' },
+  { label: 'M4A', value: 'm4a', description: 'High quality AAC' },
+  { label: 'OPUS', value: 'opus', description: 'Best quality/size ratio' },
+  { label: 'FLAC', value: 'flac', description: 'Lossless audio (needs ffmpeg)' }
 ]

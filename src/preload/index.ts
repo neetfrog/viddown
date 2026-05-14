@@ -49,6 +49,23 @@ const api = {
   onYtDlpInstallProgress: (cb: (msg: string) => void) => {
     ipcRenderer.on('ytdlp-install-progress', (_e, msg) => cb(msg))
     return () => ipcRenderer.removeAllListeners('ytdlp-install-progress')
+  },
+
+  // ffmpeg
+  checkFfmpeg: () => ipcRenderer.invoke('check-ffmpeg'),
+  installFfmpeg: () => ipcRenderer.invoke('install-ffmpeg'),
+
+  // gallery-dl
+  checkGalleryDl: () => ipcRenderer.invoke('check-gallery-dl'),
+  installGalleryDl: () => ipcRenderer.invoke('install-gallery-dl'),
+
+  onFfmpegInstallProgress: (cb: (msg: string) => void) => {
+    ipcRenderer.on('ffmpeg-install-progress', (_e, msg) => cb(msg))
+    return () => ipcRenderer.removeAllListeners('ffmpeg-install-progress')
+  },
+  onGalleryDlInstallProgress: (cb: (msg: string) => void) => {
+    ipcRenderer.on('gallery-dl-install-progress', (_e, msg) => cb(msg))
+    return () => ipcRenderer.removeAllListeners('gallery-dl-install-progress')
   }
 }
 

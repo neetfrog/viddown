@@ -9,6 +9,8 @@ export interface AppSettings {
   embedThumbnail: boolean
   addMetadata: boolean
   ytdlpCustomPath: string
+  ffmpegCustomPath: string
+  galleryDlCustomPath: string
 }
 
 export const defaultSettings: AppSettings = {
@@ -17,7 +19,9 @@ export const defaultSettings: AppSettings = {
   defaultFormat: 'bestvideo+bestaudio/best',
   embedThumbnail: false,
   addMetadata: true,
-  ytdlpCustomPath: ''
+  ytdlpCustomPath: '',
+  ffmpegCustomPath: '',
+  galleryDlCustomPath: ''
 }
 
 const settingsPath = join(app.getPath('userData'), 'settings.json')

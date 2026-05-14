@@ -93,6 +93,12 @@ export default function DownloadCard({ item, onCancel, onRemove, onOpenFolder }:
               <span className="text-[11px] text-app-muted">{formatEta(item.eta)}</span>
             </>
           )}
+          {isActive && item.progress === -1 && item.size && (
+            <>
+              <span className="text-[11px] text-app-muted">·</span>
+              <span className="text-[11px] text-app-secondary">{item.size}</span>
+            </>
+          )}
           {isComplete && item.size && (
             <span className="text-[11px] text-app-success/80">{item.size}</span>
           )}
@@ -109,12 +115,16 @@ export default function DownloadCard({ item, onCancel, onRemove, onOpenFolder }:
         {/* Progress bar */}
         {(isActive || isComplete) && (
           <div className="w-full h-1 bg-app-border rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-300 relative ${progressColor} ${
-                isActive ? 'progress-shine' : ''
-              }`}
-              style={{ width: `${isComplete ? 100 : item.progress}%` }}
-            />
+            {item.progress === -1 ? (
+              <div className="h-full w-full rounded-full bg-app-accent animate-pulse" />
+            ) : (
+              <div
+                className={`h-full rounded-full transition-all duration-300 relative ${progressColor} ${
+                  isActive ? 'progress-shine' : ''
+                }`}
+                style={{ width: `${isComplete ? 100 : item.progress}%` }}
+              />
+            )}
           </div>
         )}
 

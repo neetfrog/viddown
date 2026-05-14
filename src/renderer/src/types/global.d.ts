@@ -21,6 +21,12 @@ interface VidDownAPI {
   onDownloadError: (cb: (data: any) => void) => () => void
   onDownloadCancelled: (cb: (data: any) => void) => () => void
   onYtDlpInstallProgress: (cb: (msg: string) => void) => () => void
+  checkFfmpeg: () => Promise<{ available: boolean; path: string }>
+  installFfmpeg: () => Promise<{ success: boolean; error?: string }>
+  checkGalleryDl: () => Promise<{ installed: boolean; path: string }>
+  installGalleryDl: () => Promise<{ success: boolean; error?: string }>
+  onFfmpegInstallProgress: (cb: (msg: string) => void) => () => void
+  onGalleryDlInstallProgress: (cb: (msg: string) => void) => () => void
 }
 
 declare global {

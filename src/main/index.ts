@@ -94,7 +94,12 @@ app.whenReady().then(() => {
   ipcMain.handle('start-download', async (_e, request) => {
     const settings = getSettings()
     try {
-      await downloadManager.startDownload({ ...request, outputDir: settings.downloadPath })
+      await downloadManager.startDownload({
+        ...request,
+        outputDir: settings.downloadPath,
+        ffmpegCustomPath: settings.ffmpegCustomPath,
+        galleryDlCustomPath: settings.galleryDlCustomPath
+      })
       return { success: true }
     } catch (err: any) {
       return { success: false, error: err.message }
@@ -104,6 +109,44 @@ app.whenReady().then(() => {
   ipcMain.handle('cancel-download', (_e, id: string) => {
     downloadManager.cancelDownload(id)
     return { success: true }
+  })
+
+  // ffmpeg
+  ipcMain.handle('check-ffmpeg', () => {
+    const settings = getSettings()
+    const path = downloadManager.findFfmpeg(settings.ffmpegCustomPath)
+    return { available: !!path, path: path || '' }
+  })
+
+  ipcMain.handle('install-ffmpeg', async () => {
+    try {
+      await downloadManager.installFfmpeg((progress) => {
+        win.webContents.send('ffmpeg-install-progress', progress)
+      })
+      return { success: true }
+    } catch (err: any) {
+      return { success: false, error: err.message }
+    }
+  })
+
+  // gallery-dl
+  ipcMain.handle('check-gallery-dl', () => {
+    const settings = getSettings()
+    return {
+      installed: downloadManager.isGalleryDlInstalled(settings.galleryDlCustomPath),
+      path: downloadManager.getGalleryDlPath(settings.galleryDlCustomPath)
+    }
+  })
+
+  ipcMain.handle('install-gallery-dl', async () => {
+    try {
+      await downloadManager.installGalleryDl((progress) => {
+        win.webContents.send('gallery-dl-install-progress', progress)
+      })
+      return { success: true }
+    } catch (err: any) {
+      return { success: false, error: err.message }
+    }
   })
 
   // File system

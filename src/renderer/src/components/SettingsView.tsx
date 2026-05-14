@@ -1,14 +1,27 @@
 import { useEffect, useState } from 'react'
-import { Folder, Save, Settings, RotateCcw } from 'lucide-react'
+import { Folder, Save, Settings, RotateCcw, CheckCircle2, AlertCircle, Loader2, Wrench, Download } from 'lucide-react'
 import { AppSettings, FORMAT_PRESETS } from '../types'
 import { motion } from 'framer-motion'
 
 export default function SettingsView() {
   const [settings, setSettings] = useState<AppSettings | null>(null)
   const [saved, setSaved] = useState(false)
+  const [ffmpegStatus, setFfmpegStatus] = useState<{ available: boolean; path: string } | null>(null)
+  const [galleryDlStatus, setGalleryDlStatus] = useState<{ installed: boolean; path: string } | null>(null)
+  const [ffmpegInstalling, setFfmpegInstalling] = useState(false)
+  const [galleryDlInstalling, setGalleryDlInstalling] = useState(false)
+  const [ffmpegProgress, setFfmpegProgress] = useState('')
+  const [galleryDlProgress, setGalleryDlProgress] = useState('')
+  const [ffmpegError, setFfmpegError] = useState('')
+  const [galleryDlError, setGalleryDlError] = useState('')
 
   useEffect(() => {
     window.api.getSettings().then(setSettings)
+  }, [])
+
+  useEffect(() => {
+    window.api.checkFfmpeg().then(setFfmpegStatus)
+    window.api.checkGalleryDl().then(setGalleryDlStatus)
   }, [])
 
   const update = (patch: Partial<AppSettings>) => {
@@ -20,6 +33,8 @@ export default function SettingsView() {
     await window.api.saveSettings(settings)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
+    window.api.checkFfmpeg().then(setFfmpegStatus)
+    window.api.checkGalleryDl().then(setGalleryDlStatus)
   }
 
   const handleChooseDir = async () => {
@@ -30,6 +45,36 @@ export default function SettingsView() {
   const handleReset = async () => {
     const defaultPath = await window.api.getDefaultDownloadPath()
     update({ downloadPath: defaultPath })
+  }
+
+  const handleInstallFfmpeg = async () => {
+    setFfmpegInstalling(true)
+    setFfmpegError('')
+    setFfmpegProgress('Starting...')
+    const off = window.api.onFfmpegInstallProgress(setFfmpegProgress)
+    const res = await window.api.installFfmpeg()
+    off()
+    setFfmpegInstalling(false)
+    if (res.success) {
+      window.api.checkFfmpeg().then(setFfmpegStatus)
+    } else {
+      setFfmpegError(res.error || 'Installation failed')
+    }
+  }
+
+  const handleInstallGalleryDl = async () => {
+    setGalleryDlInstalling(true)
+    setGalleryDlError('')
+    setGalleryDlProgress('Starting...')
+    const off = window.api.onGalleryDlInstallProgress(setGalleryDlProgress)
+    const res = await window.api.installGalleryDl()
+    off()
+    setGalleryDlInstalling(false)
+    if (res.success) {
+      window.api.checkGalleryDl().then(setGalleryDlStatus)
+    } else {
+      setGalleryDlError(res.error || 'Installation failed')
+    }
   }
 
   if (!settings) {
@@ -154,6 +199,148 @@ export default function SettingsView() {
                 value={settings.addMetadata}
                 onChange={(v) => update({ addMetadata: v })}
               />
+            </div>
+          </section>
+
+          {/* Tools */}
+          <section>
+            <h3 className="text-xs font-semibold text-app-muted uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Wrench size={12} />
+              Tools
+            </h3>
+            <div className="bg-app-card border border-app-border rounded-xl overflow-hidden divide-y divide-app-border">
+
+              {/* yt-dlp */}
+              <div className="p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-app-text">yt-dlp</p>
+                    <p className="text-[11px] text-app-muted mt-0.5">Video downloader — required</p>
+                  </div>
+                  <span className="flex items-center gap-1.5 text-xs text-app-success">
+                    <CheckCircle2 size={13} />
+                    Installed
+                  </span>
+                </div>
+                <div>
+                  <label className="block text-xs text-app-muted mb-1">Custom binary path</label>
+                  <input
+                    type="text"
+                    value={settings.ytdlpCustomPath}
+                    onChange={(e) => update({ ytdlpCustomPath: e.target.value })}
+                    placeholder="Leave blank to use built-in"
+                    className="w-full bg-app-surface border border-app-border rounded-lg px-3 py-2 text-sm text-app-text outline-none focus:border-app-accent/60 transition-colors font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* ffmpeg */}
+              <div className="p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-app-text">ffmpeg</p>
+                    <p className="text-[11px] text-app-muted mt-0.5">Audio conversion &amp; video merging</p>
+                  </div>
+                  {ffmpegStatus === null ? (
+                    <span className="text-xs text-app-muted">Checking...</span>
+                  ) : ffmpegStatus.available ? (
+                    <span className="flex items-center gap-1.5 text-xs text-app-success">
+                      <CheckCircle2 size={13} />
+                      Found
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-xs text-amber-400">
+                      <AlertCircle size={13} />
+                      Not found
+                    </span>
+                  )}
+                </div>
+                {ffmpegStatus?.available && ffmpegStatus.path && (
+                  <p className="text-[11px] text-app-muted font-mono truncate">&darr; {ffmpegStatus.path}</p>
+                )}
+                <div>
+                  <label className="block text-xs text-app-muted mb-1">Custom binary path</label>
+                  <input
+                    type="text"
+                    value={settings.ffmpegCustomPath}
+                    onChange={(e) => update({ ffmpegCustomPath: e.target.value })}
+                    placeholder="e.g. C:\ffmpeg\bin\ffmpeg.exe"
+                    className="w-full bg-app-surface border border-app-border rounded-lg px-3 py-2 text-sm text-app-text outline-none focus:border-app-accent/60 transition-colors font-mono"
+                  />
+                </div>
+                {!ffmpegStatus?.available && (
+                  ffmpegInstalling ? (
+                    <div className="flex items-center gap-2 text-app-muted">
+                      <Loader2 size={14} className="animate-spin" />
+                      <span className="text-xs">{ffmpegProgress}</span>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <button
+                        onClick={handleInstallFfmpeg}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-app-accent hover:bg-app-accent-hover text-white text-xs font-medium rounded-lg transition-all"
+                      >
+                        <Download size={12} />
+                        Auto-install (Windows only)
+                      </button>
+                      {ffmpegError && <p className="text-[11px] text-red-400">{ffmpegError}</p>}
+                    </div>
+                  )
+                )}
+              </div>
+
+              {/* gallery-dl */}
+              <div className="p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-app-text">gallery-dl</p>
+                    <p className="text-[11px] text-app-muted mt-0.5">Gallery &amp; image board downloader</p>
+                  </div>
+                  {galleryDlStatus === null ? (
+                    <span className="text-xs text-app-muted">Checking...</span>
+                  ) : galleryDlStatus.installed ? (
+                    <span className="flex items-center gap-1.5 text-xs text-app-success">
+                      <CheckCircle2 size={13} />
+                      Installed
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-xs text-amber-400">
+                      <AlertCircle size={13} />
+                      Not installed
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-xs text-app-muted mb-1">Custom binary path</label>
+                  <input
+                    type="text"
+                    value={settings.galleryDlCustomPath}
+                    onChange={(e) => update({ galleryDlCustomPath: e.target.value })}
+                    placeholder="Leave blank to use built-in or system PATH"
+                    className="w-full bg-app-surface border border-app-border rounded-lg px-3 py-2 text-sm text-app-text outline-none focus:border-app-accent/60 transition-colors font-mono"
+                  />
+                </div>
+                {!galleryDlStatus?.installed && (
+                  galleryDlInstalling ? (
+                    <div className="flex items-center gap-2 text-app-muted">
+                      <Loader2 size={14} className="animate-spin" />
+                      <span className="text-xs">{galleryDlProgress}</span>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <button
+                        onClick={handleInstallGalleryDl}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-app-accent hover:bg-app-accent-hover text-white text-xs font-medium rounded-lg transition-all"
+                      >
+                        <Download size={12} />
+                        Install gallery-dl (Win / Linux)
+                      </button>
+                      {galleryDlError && <p className="text-[11px] text-red-400">{galleryDlError}</p>}
+                    </div>
+                  )
+                )}
+              </div>
+
             </div>
           </section>
 

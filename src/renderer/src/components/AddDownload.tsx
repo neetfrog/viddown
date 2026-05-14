@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
-import { Link, Loader2, Search, Download, ChevronDown, X, AlertCircle } from 'lucide-react'
+import { Link, Loader2, Search, Download, ChevronDown, X, AlertCircle, Music, Film, Image } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VideoInfo, FORMAT_PRESETS } from '../types'
+import { VideoInfo, FORMAT_PRESETS, AUDIO_FORMAT_PRESETS, DownloadMode } from '../types'
 import { useDownloadStore } from '../stores/useDownloadStore'
 
 function generateId() {
@@ -17,23 +17,26 @@ function formatDuration(seconds?: number): string {
   return `${m}:${String(s).padStart(2, '0')}`
 }
 
+const MODE_TABS: { mode: DownloadMode; label: string; icon: any }[] = [
+  { mode: 'video', label: 'Video', icon: Film },
+  { mode: 'audio', label: 'Audio', icon: Music },
+  { mode: 'gallery', label: 'Gallery', icon: Image }
+]
+
 export default function AddDownload() {
   const [url, setUrl] = useState('')
   const [fetchState, setFetchState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null)
   const [fetchError, setFetchError] = useState('')
+  const [mode, setMode] = useState<DownloadMode>('video')
   const [selectedFormat, setSelectedFormat] = useState(FORMAT_PRESETS[0])
+  const [selectedAudioFormat, setSelectedAudioFormat] = useState(AUDIO_FORMAT_PRESETS[0])
   const [formatOpen, setFormatOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const { addDownload } = useDownloadStore()
 
   const isValidUrl = (u: string) => {
-    try {
-      new URL(u)
-      return true
-    } catch {
-      return false
-    }
+    try { new URL(u); return true } catch { return false }
   }
 
   const handleFetch = async () => {
@@ -41,7 +44,6 @@ export default function AddDownload() {
     setFetchState('loading')
     setFetchError('')
     setVideoInfo(null)
-
     const res = await window.api.fetchVideoInfo(url.trim())
     if (res.success) {
       setVideoInfo(res.data)
@@ -55,7 +57,6 @@ export default function AddDownload() {
   const handleDownload = async () => {
     const id = generateId()
     const title = videoInfo?.title || url
-
     addDownload({
       id,
       url: url.trim(),
@@ -63,48 +64,74 @@ export default function AddDownload() {
       thumbnail: videoInfo?.thumbnail,
       status: 'downloading',
       progress: 0,
-      format: selectedFormat.value,
-      formatLabel: selectedFormat.label,
+      format: mode === 'audio' ? selectedAudioFormat.value : selectedFormat.value,
+      formatLabel: mode === 'audio' ? `Audio · ${selectedAudioFormat.label}` : selectedFormat.label,
+      audioOnly: mode === 'audio',
+      audioFormat: mode === 'audio' ? selectedAudioFormat.value : undefined,
       addedAt: Date.now(),
       extractor: videoInfo?.extractor_key
     })
-
     await window.api.startDownload({
       id,
       url: url.trim(),
       format: selectedFormat.value,
       title,
-      thumbnail: videoInfo?.thumbnail
+      thumbnail: videoInfo?.thumbnail,
+      audioOnly: mode === 'audio',
+      audioFormat: mode === 'audio' ? selectedAudioFormat.value : undefined
     })
-
-    // Reset form
     setUrl('')
     setVideoInfo(null)
     setFetchState('idle')
   }
 
+  const handleGalleryDownload = async () => {
+    if (!url.trim() || !isValidUrl(url.trim())) return
+    const id = generateId()
+    addDownload({
+      id,
+      url: url.trim(),
+      title: url.trim(),
+      status: 'downloading',
+      progress: 0,
+      format: '',
+      formatLabel: 'Gallery',
+      useGalleryDl: true,
+      addedAt: Date.now()
+    })
+    await window.api.startDownload({
+      id,
+      url: url.trim(),
+      format: '',
+      title: url.trim(),
+      useGalleryDl: true
+    })
+    setUrl('')
+  }
+
   const handleQuickDownload = async () => {
     if (!url.trim() || !isValidUrl(url.trim())) return
     const id = generateId()
-
     addDownload({
       id,
       url: url.trim(),
       title: url.trim(),
       status: 'fetching-info',
       progress: 0,
-      format: selectedFormat.value,
-      formatLabel: selectedFormat.label,
+      format: mode === 'audio' ? selectedAudioFormat.value : selectedFormat.value,
+      formatLabel: mode === 'audio' ? `Audio · ${selectedAudioFormat.label}` : selectedFormat.label,
+      audioOnly: mode === 'audio',
+      audioFormat: mode === 'audio' ? selectedAudioFormat.value : undefined,
       addedAt: Date.now()
     })
-
     await window.api.startDownload({
       id,
       url: url.trim(),
       format: selectedFormat.value,
-      title: url.trim()
+      title: url.trim(),
+      audioOnly: mode === 'audio',
+      audioFormat: mode === 'audio' ? selectedAudioFormat.value : undefined
     })
-
     setUrl('')
   }
 
@@ -116,85 +143,137 @@ export default function AddDownload() {
     inputRef.current?.focus()
   }
 
+  const handleModeChange = (newMode: DownloadMode) => {
+    setMode(newMode)
+    setFetchState('idle')
+    setVideoInfo(null)
+    setFetchError('')
+    setFormatOpen(false)
+  }
+
+  const currentPresets = mode === 'audio' ? AUDIO_FORMAT_PRESETS : FORMAT_PRESETS
+  const currentSelected = mode === 'audio' ? selectedAudioFormat : selectedFormat
+  const setCurrentSelected = (p: any) => {
+    if (mode === 'audio') setSelectedAudioFormat(p)
+    else setSelectedFormat(p)
+  }
+
   return (
     <div className="px-6 pt-5 pb-4 border-b border-app-border bg-app-surface/50">
-      {/* URL Input row */}
-      <div className="flex items-center gap-2">
-        <div className="flex-1 flex items-center gap-2 bg-app-card border border-app-border rounded-xl px-3 py-2.5 focus-within:border-app-accent/60 focus-within:ring-2 focus-within:ring-app-accent/10 transition-all">
-          <Link size={15} className="text-app-muted shrink-0" />
-          <input
-            ref={inputRef}
-            type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleFetch()
-            }}
-            placeholder="Paste a video URL from YouTube, Twitter, TikTok, and 1000+ more..."
-            className="flex-1 bg-transparent text-sm text-app-text placeholder:text-app-muted outline-none min-w-0"
-          />
-          {url && (
-            <button onClick={handleReset} className="text-app-muted hover:text-app-text shrink-0">
-              <X size={14} />
-            </button>
-          )}
-        </div>
-
-        {/* Format selector */}
-        <div className="relative">
-          <button
-            onClick={() => setFormatOpen((o) => !o)}
-            className="flex items-center gap-1.5 px-3 py-2.5 bg-app-card border border-app-border rounded-xl text-sm text-app-secondary hover:text-app-text hover:border-app-accent/40 transition-all whitespace-nowrap"
-          >
-            {selectedFormat.label}
-            <ChevronDown size={13} className={`transition-transform ${formatOpen ? 'rotate-180' : ''}`} />
+      {/* URL input */}
+      <div className="flex items-center gap-2 bg-app-card border border-app-border rounded-xl px-3 py-2.5 focus-within:border-app-accent/60 focus-within:ring-2 focus-within:ring-app-accent/10 transition-all">
+        <Link size={15} className="text-app-muted shrink-0" />
+        <input
+          ref={inputRef}
+          type="url"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') mode === 'gallery' ? handleGalleryDownload() : handleFetch()
+          }}
+          placeholder={
+            mode === 'gallery'
+              ? 'Paste a gallery URL (DeviantArt, Pixiv, Danbooru, etc.)...'
+              : 'Paste a video URL from YouTube, Twitter, TikTok, and 1000+ more...'
+          }
+          className="flex-1 bg-transparent text-sm text-app-text placeholder:text-app-muted outline-none min-w-0"
+        />
+        {url && (
+          <button onClick={handleReset} className="text-app-muted hover:text-app-text shrink-0">
+            <X size={14} />
           </button>
-
-          <AnimatePresence>
-            {formatOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -6, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -6, scale: 0.96 }}
-                transition={{ duration: 0.12 }}
-                className="absolute right-0 top-full mt-1.5 w-56 bg-app-card border border-app-border rounded-xl shadow-2xl shadow-black/40 z-50 py-1 overflow-hidden"
-              >
-                {FORMAT_PRESETS.map((preset) => (
-                  <button
-                    key={preset.value}
-                    onClick={() => {
-                      setSelectedFormat(preset)
-                      setFormatOpen(false)
-                    }}
-                    className={`w-full flex flex-col items-start px-3 py-2 text-left hover:bg-white/5 transition-colors ${
-                      selectedFormat.value === preset.value ? 'text-app-accent' : 'text-app-text'
-                    }`}
-                  >
-                    <span className="text-sm font-medium">{preset.label}</span>
-                    <span className="text-[11px] text-app-muted">{preset.description}</span>
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Fetch info button */}
-        <button
-          onClick={handleFetch}
-          disabled={!url.trim() || !isValidUrl(url.trim()) || fetchState === 'loading'}
-          className="flex items-center gap-2 px-4 py-2.5 bg-app-accent hover:bg-app-accent-hover disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-xl transition-all"
-        >
-          {fetchState === 'loading' ? (
-            <Loader2 size={15} className="animate-spin" />
-          ) : (
-            <Search size={15} />
-          )}
-          Fetch Info
-        </button>
+        )}
       </div>
 
-      {/* Video preview card */}
+      {/* Mode tabs + format + action */}
+      <div className="flex items-center gap-2 mt-2">
+        {/* Mode tabs */}
+        <div className="flex items-center gap-0.5 bg-app-card border border-app-border rounded-xl p-1 shrink-0">
+          {MODE_TABS.map(({ mode: m, label, icon: Icon }) => (
+            <button
+              key={m}
+              onClick={() => handleModeChange(m)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                mode === m
+                  ? 'bg-app-accent text-white'
+                  : 'text-app-secondary hover:text-app-text'
+              }`}
+            >
+              <Icon size={12} />
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Format selector — hidden in gallery mode */}
+        {mode !== 'gallery' && (
+          <div className="relative">
+            <button
+              onClick={() => setFormatOpen((o) => !o)}
+              className="flex items-center gap-1.5 px-3 py-2 bg-app-card border border-app-border rounded-xl text-sm text-app-secondary hover:text-app-text hover:border-app-accent/40 transition-all whitespace-nowrap"
+            >
+              {currentSelected.label}
+              <ChevronDown size={13} className={`transition-transform ${formatOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <AnimatePresence>
+              {formatOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                  transition={{ duration: 0.12 }}
+                  className="absolute left-0 top-full mt-1.5 w-56 bg-app-card border border-app-border rounded-xl shadow-2xl shadow-black/40 z-50 py-1 overflow-hidden"
+                >
+                  {currentPresets.map((preset) => (
+                    <button
+                      key={preset.value}
+                      onClick={() => {
+                        setCurrentSelected(preset)
+                        setFormatOpen(false)
+                      }}
+                      className={`w-full flex flex-col items-start px-3 py-2 text-left hover:bg-white/5 transition-colors ${
+                        currentSelected.value === preset.value ? 'text-app-accent' : 'text-app-text'
+                      }`}
+                    >
+                      <span className="text-sm font-medium">{preset.label}</span>
+                      <span className="text-[11px] text-app-muted">{preset.description}</span>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
+        <div className="flex-1" />
+
+        {/* Action button */}
+        {mode === 'gallery' ? (
+          <button
+            onClick={handleGalleryDownload}
+            disabled={!url.trim() || !isValidUrl(url.trim())}
+            className="flex items-center gap-2 px-4 py-2 bg-app-accent hover:bg-app-accent-hover disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-xl transition-all"
+          >
+            <Download size={15} />
+            Download Gallery
+          </button>
+        ) : (
+          <button
+            onClick={handleFetch}
+            disabled={!url.trim() || !isValidUrl(url.trim()) || fetchState === 'loading'}
+            className="flex items-center gap-2 px-4 py-2 bg-app-accent hover:bg-app-accent-hover disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-xl transition-all"
+          >
+            {fetchState === 'loading' ? (
+              <Loader2 size={15} className="animate-spin" />
+            ) : (
+              <Search size={15} />
+            )}
+            Fetch Info
+          </button>
+        )}
+      </div>
+
+      {/* Preview card */}
       <AnimatePresence>
         {fetchState === 'ready' && videoInfo && (
           <motion.div
@@ -219,7 +298,7 @@ export default function AddDownload() {
                 <p className="text-sm font-medium text-app-text line-clamp-2 leading-snug">
                   {videoInfo.title}
                 </p>
-                <div className="flex items-center gap-3 mt-1.5">
+                <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                   {videoInfo.uploader && (
                     <span className="text-[11px] text-app-muted">{videoInfo.uploader}</span>
                   )}
@@ -233,14 +312,19 @@ export default function AddDownload() {
                       {videoInfo.extractor_key}
                     </span>
                   )}
+                  {mode === 'audio' && (
+                    <span className="text-[11px] text-green-400 bg-green-400/10 px-1.5 py-0.5 rounded-full">
+                      Audio only · {selectedAudioFormat.label}
+                    </span>
+                  )}
                 </div>
               </div>
               <button
                 onClick={handleDownload}
                 className="flex items-center gap-2 px-4 py-2 bg-app-accent hover:bg-app-accent-hover text-white text-sm font-medium rounded-lg transition-all shrink-0"
               >
-                <Download size={14} />
-                Download
+                {mode === 'audio' ? <Music size={14} /> : <Download size={14} />}
+                {mode === 'audio' ? `Save ${selectedAudioFormat.label}` : 'Download'}
               </button>
             </div>
           </motion.div>
