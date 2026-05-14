@@ -70,7 +70,7 @@ export interface AppSettings {
   galleryDlCustomPath: string
 }
 
-export type NavView = 'downloads' | 'history' | 'settings'
+export type NavView = 'downloads' | 'history' | 'settings' | 'logs'
 
 export const FORMAT_PRESETS: { label: string; value: string; description: string }[] = [
   {

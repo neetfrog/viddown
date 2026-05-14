@@ -1,4 +1,4 @@
-import { Download, History, Settings, Wifi } from 'lucide-react'
+import { Download, History, Settings, Terminal, Wifi } from 'lucide-react'
 import { NavView } from '../types'
 import { useDownloadStore } from '../stores/useDownloadStore'
 
@@ -10,6 +10,7 @@ interface SidebarProps {
 const navItems: { view: NavView; label: string; icon: any }[] = [
   { view: 'downloads', label: 'Downloads', icon: Download },
   { view: 'history', label: 'History', icon: History },
+  { view: 'logs', label: 'Logs', icon: Terminal },
   { view: 'settings', label: 'Settings', icon: Settings }
 ]
 

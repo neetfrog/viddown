@@ -31,24 +31,29 @@ const api = {
 
   // Events
   onDownloadProgress: (cb: (data: any) => void) => {
-    ipcRenderer.on('download-progress', (_e, data) => cb(data))
-    return () => ipcRenderer.removeAllListeners('download-progress')
+    const listener = (_e: any, data: any) => cb(data)
+    ipcRenderer.on('download-progress', listener)
+    return () => ipcRenderer.removeListener('download-progress', listener)
   },
   onDownloadComplete: (cb: (data: any) => void) => {
-    ipcRenderer.on('download-complete', (_e, data) => cb(data))
-    return () => ipcRenderer.removeAllListeners('download-complete')
+    const listener = (_e: any, data: any) => cb(data)
+    ipcRenderer.on('download-complete', listener)
+    return () => ipcRenderer.removeListener('download-complete', listener)
   },
   onDownloadError: (cb: (data: any) => void) => {
-    ipcRenderer.on('download-error', (_e, data) => cb(data))
-    return () => ipcRenderer.removeAllListeners('download-error')
+    const listener = (_e: any, data: any) => cb(data)
+    ipcRenderer.on('download-error', listener)
+    return () => ipcRenderer.removeListener('download-error', listener)
   },
   onDownloadCancelled: (cb: (data: any) => void) => {
-    ipcRenderer.on('download-cancelled', (_e, data) => cb(data))
-    return () => ipcRenderer.removeAllListeners('download-cancelled')
+    const listener = (_e: any, data: any) => cb(data)
+    ipcRenderer.on('download-cancelled', listener)
+    return () => ipcRenderer.removeListener('download-cancelled', listener)
   },
   onYtDlpInstallProgress: (cb: (msg: string) => void) => {
-    ipcRenderer.on('ytdlp-install-progress', (_e, msg) => cb(msg))
-    return () => ipcRenderer.removeAllListeners('ytdlp-install-progress')
+    const listener = (_e: any, msg: string) => cb(msg)
+    ipcRenderer.on('ytdlp-install-progress', listener)
+    return () => ipcRenderer.removeListener('ytdlp-install-progress', listener)
   },
 
   // ffmpeg
@@ -60,12 +65,14 @@ const api = {
   installGalleryDl: () => ipcRenderer.invoke('install-gallery-dl'),
 
   onFfmpegInstallProgress: (cb: (msg: string) => void) => {
-    ipcRenderer.on('ffmpeg-install-progress', (_e, msg) => cb(msg))
-    return () => ipcRenderer.removeAllListeners('ffmpeg-install-progress')
+    const listener = (_e: any, msg: string) => cb(msg)
+    ipcRenderer.on('ffmpeg-install-progress', listener)
+    return () => ipcRenderer.removeListener('ffmpeg-install-progress', listener)
   },
   onGalleryDlInstallProgress: (cb: (msg: string) => void) => {
-    ipcRenderer.on('gallery-dl-install-progress', (_e, msg) => cb(msg))
-    return () => ipcRenderer.removeAllListeners('gallery-dl-install-progress')
+    const listener = (_e: any, msg: string) => cb(msg)
+    ipcRenderer.on('gallery-dl-install-progress', listener)
+    return () => ipcRenderer.removeListener('gallery-dl-install-progress', listener)
   }
 }
 

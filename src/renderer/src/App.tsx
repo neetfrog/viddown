@@ -5,12 +5,20 @@ import DownloadsView from './components/DownloadsView'
 import HistoryView from './components/HistoryView'
 import SettingsView from './components/SettingsView'
 import SetupScreen from './components/SetupScreen'
+import LogsView from './components/LogsView'
 import { useDownloadStore } from './stores/useDownloadStore'
 import { NavView } from './types'
+
+interface LogEntry {
+  id: string
+  timestamp: string
+  message: string
+}
 
 export default function App() {
   const [activeView, setActiveView] = useState<NavView>('downloads')
   const [ytdlpReady, setYtdlpReady] = useState<boolean | null>(null)
+  const [logs, setLogs] = useState<LogEntry[]>([])
   const { addDownload, updateDownload } = useDownloadStore()
 
   // Check if yt-dlp is installed on startup
@@ -22,6 +30,17 @@ export default function App() {
 
   // Wire up download event listeners
   useEffect(() => {
+    const pushLog = (message: string) => {
+      setLogs((current) => [
+        {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          timestamp: new Date().toLocaleTimeString(),
+          message
+        },
+        ...current
+      ].slice(0, 200))
+    }
+
     const offProgress = window.api.onDownloadProgress((data: any) => {
       updateDownload(data.id, {
         progress: data.percent,
@@ -30,6 +49,11 @@ export default function App() {
         size: data.size,
         status: 'downloading'
       })
+
+      const progressText = Number.isFinite(data.percent)
+        ? `${data.percent.toFixed(1)}% ${data.size || ''} ${data.speed || ''} ETA ${data.eta || ''}`.trim()
+        : `${data.size || ''}`.trim()
+      pushLog(`Download ${data.id}: ${progressText}`)
     })
 
     const offComplete = window.api.onDownloadComplete((data: any) => {
@@ -40,6 +64,7 @@ export default function App() {
         speed: undefined,
         eta: undefined
       })
+      pushLog(`Download ${data.id} completed`)
     })
 
     const offError = window.api.onDownloadError((data: any) => {
@@ -49,6 +74,7 @@ export default function App() {
         speed: undefined,
         eta: undefined
       })
+      pushLog(`Download ${data.id} failed: ${data.error}`)
     })
 
     const offCancelled = window.api.onDownloadCancelled((data: any) => {
@@ -57,6 +83,19 @@ export default function App() {
         speed: undefined,
         eta: undefined
       })
+      pushLog(`Download ${data.id} cancelled`)
+    })
+
+    const offYtDlpProgress = window.api.onYtDlpInstallProgress((msg: string) => {
+      pushLog(`yt-dlp: ${msg}`)
+    })
+
+    const offFfmpegProgress = window.api.onFfmpegInstallProgress((msg: string) => {
+      pushLog(`ffmpeg: ${msg}`)
+    })
+
+    const offGalleryDlProgress = window.api.onGalleryDlInstallProgress((msg: string) => {
+      pushLog(`gallery-dl: ${msg}`)
     })
 
     return () => {
@@ -64,6 +103,9 @@ export default function App() {
       offComplete()
       offError()
       offCancelled()
+      offYtDlpProgress()
+      offFfmpegProgress()
+      offGalleryDlProgress()
     }
   }, [updateDownload])
 
@@ -92,6 +134,7 @@ export default function App() {
         <main className="flex-1 overflow-hidden">
           {activeView === 'downloads' && <DownloadsView />}
           {activeView === 'history' && <HistoryView />}
+          {activeView === 'logs' && <LogsView logs={logs} onClear={() => setLogs([])} />}
           {activeView === 'settings' && <SettingsView />}
         </main>
       </div>
