@@ -13,7 +13,7 @@ const FFMPEG_GITHUB_API = 'https://api.github.com/repos/yt-dlp/FFmpeg-Builds/rel
 
 async function getLatestAssetUrl(apiUrl: string, assetName: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    const req = https.get(apiUrl, { headers: { 'User-Agent': 'VidDown/1.0' } }, (res) => {
+    const req = https.get(apiUrl, { headers: { 'User-Agent': 'FetchMeThis/1.0' } }, (res) => {
       let body = ''
       res.on('data', (chunk) => (body += chunk))
       res.on('end', () => {
@@ -41,7 +41,7 @@ function downloadFile(
   return new Promise((resolve, reject) => {
     const follow = (redirectUrl: string) => {
       https
-        .get(redirectUrl, { headers: { 'User-Agent': 'VidDown/1.0' } }, (res) => {
+        .get(redirectUrl, { headers: { 'User-Agent': 'FetchMeThis/1.0' } }, (res) => {
           if (res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307) {
             follow(res.headers.location!)
             return

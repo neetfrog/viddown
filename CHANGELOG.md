@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-05-15
 
 ### Added
-- Initial release of VidDown
+- Initial release of FetchMeThis
 - One-click auto-setup for yt-dlp, ffmpeg, gallery-dl
 - Modern dark UI with Electron + React
 - Real-time download progress tracking

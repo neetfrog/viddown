@@ -1,8 +1,8 @@
-# VidDown
+# FetchMeThis
 
 A modern, local video downloader powered by **yt-dlp**. Supports 1000+ websites including YouTube, Twitter/X, TikTok, Instagram, Twitch, Reddit, and many more.
 
-**⚠️ LEGAL DISCLAIMER**: Ensure you have the right to download content you access. VidDown is a tool—users are responsible for legal compliance.
+**⚠️ LEGAL DISCLAIMER**: Ensure you have the right to download content you access. FetchMeThis is a tool—users are responsible for legal compliance.
 
 ## Features
 
@@ -84,11 +84,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed dev guide.
 
 ## Configuration
 
-Settings are stored in `~/.viddown/settings.json`:
+Settings are stored in `~/.fetchmethis/settings.json`:
 
 ```json
 {
-  "downloadPath": "/path/to/downloads/VidDown",
+  "downloadPath": "/path/to/downloads/FetchMeThis",
   "maxConcurrentDownloads": 3,
   "defaultFormat": "bestvideo+bestaudio/best",
   "embedThumbnail": false,
@@ -101,13 +101,13 @@ Settings are stored in `~/.viddown/settings.json`:
 
 ## Binaries
 
-VidDown auto-downloads and manages:
+FetchMeThis auto-downloads and manages:
 
 - **yt-dlp**: YouTube video/playlist downloader
 - **ffmpeg** (optional): Audio/video conversion
 - **gallery-dl** (optional): Multi-site downloader
 
-**Installation location**: `~/.viddown/bin/`
+**Installation location**: `~/.fetchmethis/bin/`
 
 ## Supported Sites
 
@@ -127,7 +127,7 @@ Everything [yt-dlp supports](https://github.com/yt-dlp/yt-dlp/blob/master/suppor
 
 ## Privacy & Security
 
-VidDown is **local-first**: all processing happens on your machine. We don't collect data.
+FetchMeThis is **local-first**: all processing happens on your machine. We don't collect data.
 
 - No telemetry or tracking
 - No account creation required
@@ -149,7 +149,7 @@ MIT License — see [LICENSE](LICENSE)
 
 ### "yt-dlp binary not found"
 - Click "Install yt-dlp" in the Setup screen
-- Ensure you have internet and write permissions to `~/.viddown/`
+- Ensure you have internet and write permissions to `~/.fetchmethis/`
 
 ### Download fails with "yt-dlp error"
 - Website may have changed its structure
@@ -161,7 +161,7 @@ MIT License — see [LICENSE](LICENSE)
 - See [Code Signing](#code-signing--distribution)
 
 ### macOS "App is damaged" error
-- Remove quarantine: `xattr -d com.apple.quarantine VidDown.app`
+- Remove quarantine: `xattr -d com.apple.quarantine FetchMeThis.app`
 
 ## Code Signing & Distribution
 
@@ -199,4 +199,4 @@ See [Releases](https://github.com/yourusername/viddown/releases) for version his
 
 ---
 
-Made with ❤️ by VidDown contributors
+Made with ❤️ by FetchMeThis contributors

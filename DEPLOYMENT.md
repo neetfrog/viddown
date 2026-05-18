@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This guide covers preparing VidDown for production release.
+This guide covers preparing FetchMeThis for production release.
 
 ## Pre-Release Checklist
 
@@ -21,8 +21,8 @@ This guide covers preparing VidDown for production release.
 npm run package:win
 ```
 Outputs to `dist/`:
-- `VidDown Setup 1.0.0.exe` — NSIS installer
-- `VidDown 1.0.0.exe` — Portable executable
+- `FetchMeThis Setup 1.0.0.exe` — NSIS installer
+- `FetchMeThis 1.0.0.exe` — Portable executable
 
 **With Code Signing** (optional):
 ```bash
@@ -36,8 +36,8 @@ npm run package:win
 npm run package:mac
 ```
 Outputs to `dist/`:
-- `VidDown-1.0.0.dmg` — Disk image
-- `VidDown-1.0.0-mac.zip` — Zip archive
+- `FetchMeThis-1.0.0.dmg` — Disk image
+- `FetchMeThis-1.0.0-mac.zip` — Zip archive
 
 **With Notarization** (recommended for App Store):
 1. Obtain Apple Developer ID Certificate
@@ -50,8 +50,8 @@ Outputs to `dist/`:
 npm run package:linux
 ```
 Outputs to `dist/`:
-- `VidDown-1.0.0.AppImage` — Portable AppImage
-- `viddown_1.0.0_amd64.deb` — Debian package
+- `FetchMeThis-1.0.0.AppImage` — Portable AppImage
+- `fetchmethis_1.0.0_amd64.deb` — Debian package
 
 ## Publishing Releases
 
@@ -67,7 +67,7 @@ Outputs to `dist/`:
    - SHA256 checksums
 
 ### Automated via GitHub Actions
-VidDown includes CI/CD workflow (`.github/workflows/build.yml`):
+FetchMeThis includes CI/CD workflow (`.github/workflows/build.yml`):
 1. Push tag: `git tag v1.0.0 && git push --tags`
 2. GitHub Actions automatically:
    - Builds for all platforms
@@ -80,7 +80,7 @@ VidDown includes CI/CD workflow (`.github/workflows/build.yml`):
 Primary distribution method. Users download directly from [Releases](https://github.com/yourusername/viddown/releases).
 
 ### Package Managers (Optional)
-Consider adding VidDown to:
+Consider adding FetchMeThis to:
 - **Windows**: WinGet, Chocolatey
 - **macOS**: Homebrew
 - **Linux**: Snap Store, Flathub, distro repositories

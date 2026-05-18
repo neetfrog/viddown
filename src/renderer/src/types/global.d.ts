@@ -1,6 +1,6 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 
-interface VidDownAPI {
+interface FetchMeThisAPI {
   minimize: () => void
   maximize: () => void
   close: () => void
@@ -32,6 +32,6 @@ interface VidDownAPI {
 declare global {
   interface Window {
     electron: ElectronAPI
-    api: VidDownAPI
+    api: FetchMeThisAPI
   }
 }

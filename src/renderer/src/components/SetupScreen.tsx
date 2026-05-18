@@ -55,9 +55,9 @@ export default function SetupScreen({ onComplete }: SetupScreenProps) {
 
         <p className="text-app-secondary text-sm leading-relaxed">
           {state === 'idle' &&
-            'VidDown uses yt-dlp to download from 1000+ websites. We need to download the yt-dlp binary first (~10 MB).'}
+            'FetchMeThis uses yt-dlp to download from 1000+ websites. We need to download the yt-dlp binary first (~10 MB).'}
           {state === 'installing' && progress}
-          {state === 'done' && 'yt-dlp is installed. Launching VidDown...'}
+          {state === 'done' && 'yt-dlp is installed. Launching FetchMeThis...'}
           {state === 'error' && (error || 'Could not download yt-dlp. Check your internet connection.')}
         </p>
 

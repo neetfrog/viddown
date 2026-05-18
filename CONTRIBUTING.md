@@ -1,6 +1,6 @@
-# Contributing to VidDown
+# Contributing to FetchMeThis
 
-Thank you for your interest in VidDown! This guide outlines the development process and best practices.
+Thank you for your interest in FetchMeThis! This guide outlines the development process and best practices.
 
 ## Prerequisites
 
@@ -152,7 +152,7 @@ npm run dev -- --inspect
 Press `Ctrl+Shift+I` to open DevTools in dev mode.
 
 ### Logs
-Check `~/.viddown/` for app data and logs.
+Check `~/.fetchmethis/` for app data and logs.
 
 ## Architecture Notes
 

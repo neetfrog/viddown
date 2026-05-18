@@ -11,11 +11,12 @@ interface DownloadStore {
   historyDownloads: () => DownloadItem[]
 }
 
-const HISTORY_KEY = 'viddown_history'
+const HISTORY_KEY = 'fetchmethis_history'
+const LEGACY_HISTORY_KEY = 'viddown_history'
 
 function loadHistory(): DownloadItem[] {
   try {
-    const raw = localStorage.getItem(HISTORY_KEY)
+    const raw = localStorage.getItem(HISTORY_KEY) ?? localStorage.getItem(LEGACY_HISTORY_KEY)
     if (!raw) return []
     return JSON.parse(raw)
   } catch {

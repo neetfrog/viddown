@@ -15,7 +15,7 @@ export default function TitleBar() {
         <div className="w-6 h-6 bg-app-accent rounded-md flex items-center justify-center shrink-0">
           <Download size={13} className="text-white" />
         </div>
-        <span className="font-semibold text-sm text-app-text tracking-wide">VidDown</span>
+        <span className="font-semibold text-sm text-app-text tracking-wide">FetchMeThis</span>
       </div>
 
       {/* Drag area */}

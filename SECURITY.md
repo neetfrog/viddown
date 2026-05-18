@@ -10,7 +10,7 @@
 
 **Please do not create GitHub issues for security vulnerabilities.**
 
-If you discover a security vulnerability in VidDown, please email `security@viddown.dev` with:
+If you discover a security vulnerability in FetchMeThis, please email `security@fetchmethis.dev` with:
 
 1. **Description**: What is the vulnerability?
 2. **Impact**: How could this be exploited?
@@ -28,7 +28,7 @@ We will:
 
 ### For Users
 
-⚠️ **Legal Compliance**: VidDown is a tool. Users are responsible for ensuring downloaded content complies with:
+⚠️ **Legal Compliance**: FetchMeThis is a tool. Users are responsible for ensuring downloaded content complies with:
 - Local copyright laws
 - Terms of service of content platforms
 - Digital rights management regulations
@@ -44,7 +44,7 @@ We will:
 
 ## Security Best Practices
 
-1. **Keep VidDown Updated**: Security patches are released as updates
+1. **Keep FetchMeThis Updated**: Security patches are released as updates
 2. **System Security**: Keep your OS and antivirus up to date
 3. **Network**: Use VPN/HTTPS only on untrusted networks
 4. **Code Review**: If building from source, review code before compilation
@@ -52,7 +52,7 @@ We will:
 
 ## Third-Party Security
 
-VidDown depends on external tools. Review their security practices:
+FetchMeThis depends on external tools. Review their security practices:
 
 - [yt-dlp Security](https://github.com/yt-dlp/yt-dlp#security)
 - [ffmpeg Security](https://ffmpeg.org/security.html)

@@ -1,5 +1,5 @@
 {
-  "name": "viddown",
+  "name": "fetchmethis",
   "version": "1.0.0",
   "description": "Modern video downloader powered by yt-dlp",
   "main": "out/main/index.js",
@@ -60,8 +60,8 @@
     "zustand": "^4.5.2"
   },
   "build": {
-    "appId": "com.viddown.app",
-    "productName": "VidDown",
+    "appId": "com.fetchmethis.app",
+    "productName": "FetchMeThis",
     "directories": {
       "output": "dist"
     },
@@ -99,7 +99,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "VidDown"
+      "shortcutName": "FetchMeThis"
     },
     "mac": {
       "target": [

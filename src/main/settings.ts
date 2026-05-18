@@ -14,7 +14,7 @@ export interface AppSettings {
 }
 
 export const defaultSettings: AppSettings = {
-  downloadPath: join(app.getPath('downloads'), 'VidDown'),
+  downloadPath: join(app.getPath('downloads'), 'FetchMeThis'),
   maxConcurrentDownloads: 3,
   defaultFormat: 'bestvideo+bestaudio/best',
   embedThumbnail: false,

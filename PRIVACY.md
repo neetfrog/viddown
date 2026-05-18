@@ -2,20 +2,20 @@
 
 ## Data Collection
 
-VidDown is a **local-first application** that operates entirely on your machine. The app does **not** collect, store, or transmit any personal data to remote servers.
+FetchMeThis is a **local-first application** that operates entirely on your machine. The app does **not** collect, store, or transmit any personal data to remote servers.
 
-### What data does VidDown process locally?
+### What data does FetchMeThis process locally?
 
 - **Download history**: Stored in your browser's `localStorage` (limited to completed/error downloads)
-- **Settings**: Stored locally in `~/.viddown/settings.json`
+- **Settings**: Stored locally in `~/.fetchmethis/settings.json`
 - **Downloaded files**: Saved to your configured download directory
-- **Temporary files**: Binary downloads (yt-dlp, ffmpeg, gallery-dl) stored in `~/.viddown/bin`
+- **Temporary files**: Binary downloads (yt-dlp, ffmpeg, gallery-dl) stored in `~/.fetchmethis/bin`
 
 All data remains on your device and is never sent to any external service.
 
 ### Network communication
 
-VidDown connects to:
+FetchMeThis connects to:
 - **GitHub API**: To check for and download latest releases of yt-dlp, ffmpeg, and gallery-dl
 - **External video hosts** (YouTube, Twitter, etc.): When fetching video info or downloading content
 
@@ -30,7 +30,7 @@ These connections are necessary for the app's core functionality and are not use
 
 ## Third-Party Tools
 
-VidDown depends on external tools. Please review their privacy/licensing:
+FetchMeThis depends on external tools. Please review their privacy/licensing:
 
 - [yt-dlp Privacy](https://github.com/yt-dlp/yt-dlp#legal-concerns)
 - [ffmpeg](https://ffmpeg.org)
@@ -40,7 +40,7 @@ VidDown depends on external tools. Please review their privacy/licensing:
 
 **Important**: Downloading copyrighted content without permission is illegal in most jurisdictions.
 
-VidDown is a tool for downloading content you have the right to download. Users are responsible for ensuring compliance with local laws and the terms of service of content providers.
+FetchMeThis is a tool for downloading content you have the right to download. Users are responsible for ensuring compliance with local laws and the terms of service of content providers.
 
 ## Changes to This Policy
 
