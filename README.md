@@ -19,7 +19,7 @@ A modern, local video downloader powered by **yt-dlp**. Supports 1000+ websites 
 
 ### From Release
 
-1. Download the latest release for your OS from [Releases](https://github.com/yourusername/viddown/releases)
+1. Download the latest release for your OS from [Releases](https://github.com/neetfrog/FetchMeThis/releases)
 2. **Windows**: Run the NSIS installer or portable exe
 3. **macOS**: Mount DMG, drag app to Applications
 4. **Linux**: Install AppImage or deb package
@@ -189,7 +189,7 @@ We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 ## Changelog
 
-See [Releases](https://github.com/yourusername/viddown/releases) for version history.
+See [Releases](https://github.com/neetfrog/FetchMeThis/releases) for version history.
 
 ## Support
 

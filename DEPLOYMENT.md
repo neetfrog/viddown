@@ -77,7 +77,7 @@ FetchMeThis includes CI/CD workflow (`.github/workflows/build.yml`):
 ## Distribution Channels
 
 ### GitHub Releases
-Primary distribution method. Users download directly from [Releases](https://github.com/yourusername/viddown/releases).
+Primary distribution method. Users download directly from [Releases](https://github.com/neetfrog/FetchMeThis/releases).
 
 ### Package Managers (Optional)
 Consider adding FetchMeThis to:
